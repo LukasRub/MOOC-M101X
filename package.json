@@ -1,0 +1,22 @@
+{
+  "name": "M101X",
+  "version": "0.0.0",
+  "description": "M101X course project",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "mocha": "^2.3.4"
+  },
+  "scripts": {
+    "test": "mocha test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LukasRub/MOOC-M101X.git"
+  },
+  "author": "Lukas Rubikas",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LukasRub/MOOC-M101X/issues"
+  }
+}
