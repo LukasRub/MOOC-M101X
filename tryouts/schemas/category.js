@@ -5,12 +5,12 @@ var categorySchema = {
     type: String
   },
   parent: {
-    type: String
+    type: String,
     ref: 'Category'
   },
   ancestors: [{
     type: String,
-    ref 'Category'
+    ref: 'Category'
   }]
 };
 
