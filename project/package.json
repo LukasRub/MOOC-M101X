@@ -4,11 +4,12 @@
   "description": "M101X course project",
   "main": "index.js",
   "dependencies": {
-    "kerberos": "0.0.17",
-    "underscore": "1.8.3",
-    "mongoose": "4.2.7",
+    "body-parser": "1.14.1",
     "express": "4.13.3",
     "http-status": "0.2.0",
+    "kerberos": "0.0.17",
+    "mongoose": "4.2.7",
+    "underscore": "1.8.3",
     "wagner-core": "0.2.0"
   },
   "devDependencies": {

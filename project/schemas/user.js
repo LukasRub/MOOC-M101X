@@ -20,7 +20,8 @@ module.exports = new mongoose.Schema({
     },
     cart: [{
       product: {
-        type: mongoose.Schema.Types.ObjectId
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product'
       },
       quantity: {
         type: Number,

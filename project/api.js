@@ -1,8 +1,39 @@
 var express = require('express');
-var httpStatus = require('http-status');
+var httpstatus = require('http-status');
+var bodyparser = require('body-parser');
 
 module.exports = function (wagner) {
   var api = express.Router();
+
+  api.use(bodyparser.json());
+
+  api.put('/me/cart', wagner.invoke(function (User) {
+    return function (req, res) {
+      try {
+        var cart = req.body.data.cart;
+      } catch (e) {
+        return res.status(httpstatus.BAD_REQUEST)
+          .json({error: 'No cart specified!'});
+      }
+      req.user.data.cart = cart;
+      req.user.save(function (err, user) {
+        if (err) {
+          return res.status(httpstatus.INTERNAL_SERVER_ERROR)
+            .json({error: err.toString()});
+        }
+        return res.json({user: user});
+      });
+    }
+  }));
+
+  api.get('/me', function (req, res) {
+    if (!req.user) {
+      return res.status(httpstatus.UNAUTHORIZED).json({error: 'Not logged in'});
+    }
+
+    req.user.populate({path: 'data.cart.product', model: 'Product'},
+      handleOne.bind(null, 'user', res));
+  });
 
   api.get('/product/id/:id', wagner.invoke(function (Product) {
     return function (req, res) {
@@ -43,11 +74,11 @@ module.exports = function (wagner) {
 
 function handleOne(property, res, err, result) {
   if (err) {
-    return res.status(httpStatus.INTERNAL_SERVER_ERROR).
-      json({error: error.toString()});
+    return res.status(httpstatus.INTERNAL_SERVER_ERROR).
+      json({error: err.toString()});
   }
   if (!result) {
-    return res.status(httpStatus.NOT_FOUND).json({error: 'Not found'});
+    return res.status(httpstatus.NOT_FOUND).json({error: 'Not found'});
   }
   var json = {};
   json[property] = result;
@@ -56,8 +87,8 @@ function handleOne(property, res, err, result) {
 
 function handleMany(property, res, err, result) {
   if (err) {
-    return res.status(httpStatus.INTERNAL_SERVER_ERROR).
-      json({error: error.toString()});
+    return res.status(httpstatus.INTERNAL_SERVER_ERROR).
+      json({error: err.toString()});
   }
   var json = {};
   json[property] = result;
