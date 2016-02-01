@@ -1,3 +1,5 @@
+var config = require('./config');
+
 function setupAuth(User, app) {
   var passport = require('passport');
   var FacebookStrategy = require('passport-facebook').Strategy;
@@ -8,13 +10,13 @@ function setupAuth(User, app) {
   });
 
   passport.deserializeUser(function (id, done) {
-    findOne({_id: id}).exec(done);
+    User.findOne({_id: id}).exec(done);
   });
 
   // Facebook-specific
   passport.use(new FacebookStrategy({
-    clientID: process.env.FACEBOOK_CLIENT_ID,
-    clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
+    clientID: config.oauth2.facebook.clientID,
+    clientSecret: config.oauth2.facebook.clientSecret,
     callbackURL: 'http://localhost:3000/auth/facebook/callback',
     profileFields: ['id', 'emails', 'name']
   },
