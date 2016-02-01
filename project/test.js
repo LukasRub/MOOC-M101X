@@ -3,6 +3,7 @@ var assert = require('assert');
 var superagent = require('superagent');
 var wagner = require('wagner-core');
 var httpstatus = require('http-status');
+var Stripe = require('stripe');
 
 var URL_ROOT = 'http://localhost:3000';
 var PRODUCT_ID = '000000000000000000000001';
@@ -12,17 +13,20 @@ describe('Product API', function() {
   var Category;
   var Product;
   var User;
+  var Stripe;
 
   before(function() {
     var app = express();
 
     // Bootstrap server
     models = require('./models')(wagner);
+    dependencies = require('./dependencies')(wagner);
 
     // Make models available in tests
     Category = models.Category;
     Product = models.Product;
     User = models.User;
+    Stripe = dependencies.Stripe;
 
     app.use(function(req, res, next) {
       User.findOne({}, function(error, user) {
@@ -158,6 +162,45 @@ describe('Product API', function() {
           assert.equal(result.data.cart[0].product.name, 'Asus Zenbook Prime');
           assert.equal(result.data.cart[0].quantity, 1);
           done();
+        });
+      });
+    });
+  });
+
+  it('can check out', function (done) {
+    this.timeout(50000);
+    var url = URL_ROOT + '/checkout';
+
+    User.findOne({}, function (err, user) {
+      assert.ifError(err);
+      user.data.cart = [{product: PRODUCT_ID, quantity: 1}];
+      user.save(function (err) {
+        assert.ifError(err);
+
+        superagent.post(url).send({
+          stripeToken: {
+            number: '4242424242424242',
+            cvc: '123',
+            exp_month: '12',
+            exp_year: '2016'
+          }
+        }).end(function (err, res) {
+          assert.ifError(err);
+
+          assert.equal(res.status, httpstatus.OK);
+          var result;
+          assert.doesNotThrow(function () {
+            result = JSON.parse(res.text);
+          });
+
+          assert.ok(result.id);
+
+          Stripe.charges.retrieve(result.id, function (err, charge) {
+            assert.ifError(err);
+            assert.ok(charge);
+            assert.equal(charge.amount, 2000 * 100);
+            done();
+          });
         });
       });
     });

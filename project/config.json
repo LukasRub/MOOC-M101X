@@ -1,9 +1,12 @@
 {
-  "oauth2" : {
+  "api" : {
     "facebook" : {
       "clientID": "1502305516730973",
       "clientSecret": "a559c72f72c2d79da28284aa247dce12",
       "callbackURL": "http://localhost:3000"
+    },
+    "stripe" : {
+      "apiKey": "sk_test_kmfYICHtx6BauJSqzRzGdxsx"
     }
   }
 }
